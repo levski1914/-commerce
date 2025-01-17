@@ -41,7 +41,7 @@ const filteredProducts=products.filter((product)=>product.name.toLowerCase().inc
                     key={product._id}
                     className="border rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow"
                 >
-                    <Link to={`/api/product/${product._id}`}>
+                    <Link to={`/product/${product._id}`}>
                         <img
                             src={product.image}
                             alt={product.name}

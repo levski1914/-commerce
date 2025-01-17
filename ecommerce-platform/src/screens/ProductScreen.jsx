@@ -10,7 +10,7 @@ const ProductScreen = () => {
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const response = await api.get(`/api/product/${_id}`);
+                const response = await api.get(`/api/product/${id}`);
                 setProduct(response.data);
             } catch (error) {
                 console.error('Error fetching product:', error);
