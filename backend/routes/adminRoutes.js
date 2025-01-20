@@ -1,15 +1,15 @@
 const router = require("express").Router();
 
 const {
-  addOrderItem,
-  getMyOrders,
-  getOrderById,
-} = require("../controllers/orderController");
+  createProduct,
+  updateProduct,
+  deleteProduct,
+} = require("../controllers/adminController");
 
-const { protect } = require("../middleware/adminMiddleware");
+const { adminMiddleware, protect } = require("../middleware/adminMiddleware");
 
-router.post("/", protect, addOrderItem); // Създаване на поръчка
-router.get("/myorders", protect, getMyOrders); // Поръчките на потребителя
-router.get("/:id", protect, getOrderById); // Детайли за конкретна поръчка
+router.post("/", protect, adminMiddleware, createProduct);
+router.put("/:id", protect, adminMiddleware, updateProduct);
+router.delete("/:id", protect, adminMiddleware, deleteProduct);
 
 module.exports = router;

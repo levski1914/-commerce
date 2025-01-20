@@ -5,7 +5,7 @@ import { logout } from "../redux/userSlice";
 
 const Header = ({ user, onLogout }) => {
   return (
-    <header className="bg-gray-800 text-white p-4">
+     <header className="bg-orange-500 text-white p-4">
       <div className="container mx-auto flex justify-between items-center">
         <Link to="/" className="text-2xl font-bold">
           ShopLogo
@@ -29,8 +29,19 @@ const Header = ({ user, onLogout }) => {
                     Profile
                   </Link>
                 </li>
+                {/* Бутон за администратора */}
+                {user.isAdmin && (
+                  <li>
+                    <Link to="/admin" className="hover:text-gray-300">
+                      Admin Panel
+                    </Link>
+                  </li>
+                )}
                 <li>
-                  <button onClick={onLogout} className="hover:text-gray-300">
+                  <button
+                    onClick={onLogout}
+                    className="hover:text-gray-300"
+                  >
                     Logout
                   </button>
                 </li>

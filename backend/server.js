@@ -12,10 +12,12 @@ app.use(express.json());
 const productRoutes = require("./routes/productRoutes");
 const userRoutes = require("./routes/userRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const orderRoutes = require("./routes/orderRoutes");
 
 app.use("/api/product", productRoutes);
 app.use("/api/auth", userRoutes);
-app.use("/api/orders", adminRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/admin", adminRoutes);
 
 mongoose
   .connect(process.env.MONGO_URI)

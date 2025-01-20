@@ -2,20 +2,21 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
 
-const ProtectedRoute = ({ children, redirectTo }) => {
+
+const ProtectedRoute = ({ children, requireAuth = false, redirectTo }) => {
   const userInfo = useSelector((state) => state.user.userInfo);
 
-  // Защита, ако потребителят е логнат и се опитва да влезе в /login или /register
-  if (userInfo && (redirectTo === "/login" || redirectTo === "/register")) {
-    return <Navigate to="/" replace />;
+  if (requireAuth && !userInfo) {
+    // Ако маршрутът изисква потребителят да е логнат, но не е
+    return <Navigate to={redirectTo || "/login"} replace />;
   }
 
-  // Защита, ако потребителят не е логнат и се опитва да влезе в защитен маршрут
-  if (!userInfo && (redirectTo === "/profile" || redirectTo === "/checkout")) {
-    return <Navigate to="/login" replace />;
+  if (!requireAuth && userInfo) {
+    // Ако маршрутът е публичен, но потребителят е вече логнат
+    return <Navigate to={redirectTo || "/"} replace />;
   }
 
-  // Връща children ако проверките преминат
+  // Връща съдържанието, ако проверките са успешни
   return children;
 };
 

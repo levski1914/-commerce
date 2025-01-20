@@ -15,6 +15,7 @@ import { useDispatch } from "react-redux";
 import { setCartItems } from "./redux/cartSlice";
 import OrderSucceedScreen from "./screens/OrderSucceedScreen";
 import axios from "axios";
+import AdminScreen from "./screens/adminScreen";
 
 function App() {
   const [user, setUser] = useState(null); // Глобално състояние за потребителя
@@ -74,49 +75,52 @@ function App() {
 
   return (
     <>
-      <Router>
-        <Header user={user} onLogout={handleLogout} />
-        <Routes>
-          <Route path="/" element={<HomeScreen />} />
-          <Route path="/product/:id" element={<ProductScreen />} />
-          <Route path="/cart" element={<CartScreen />} />
-          <Route path="/order-success" element={<OrderSucceedScreen />} />
+     <Router>
+  <Header user={user} onLogout={handleLogout} />
+  <Routes>
+    <Route path="/" element={<HomeScreen />} />
+    <Route path="/product/:id" element={<ProductScreen />} />
+    <Route path="/cart" element={<CartScreen />} />
+    <Route path="/order-success" element={<OrderSucceedScreen />} />
 
-          <Route
-            path="/login"
-            element={
-              <ProtectedRoute redirectTo="/">
-                <LoginScreen onLogin={handleLogin} />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/register"
-            element={
-              <ProtectedRoute redirectTo="/">
-                <RegisterScreen onLogin={handleLogin} />
-              </ProtectedRoute>
-            }
-          />
-          {/* Защитени маршрути за профила */}
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute redirectTo="/login">
-                <ProfileScreen />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/checkout"
-            element={
-              <CheckOutProtected>
-                <Checkout />
-              </CheckOutProtected>
-            }
-          />
-        </Routes>
-      </Router>
+    {/* Публични маршрути */}
+    <Route
+      path="/login"
+      element={
+        <ProtectedRoute requireAuth={false} redirectTo="/">
+          <LoginScreen onLogin={handleLogin} />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/register"
+      element={
+        <ProtectedRoute requireAuth={false} redirectTo="/">
+          <RegisterScreen onLogin={handleLogin} />
+        </ProtectedRoute>
+      }
+    />
+
+    {/* Защитени маршрути */}
+    <Route
+      path="/profile"
+      element={
+        <ProtectedRoute requireAuth={true} redirectTo="/login">
+          <ProfileScreen />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/checkout"
+      element={
+        <ProtectedRoute requireAuth={true} redirectTo="/login">
+          <Checkout />
+        </ProtectedRoute>
+      }
+    />
+    <Route path="/admin" element={<AdminScreen />} />
+  </Routes>
+</Router>
     </>
   );
 }

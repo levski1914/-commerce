@@ -95,15 +95,15 @@ const CartScreen = () => {
           </div>
           <div className="flex justify-between">
             <span>Shipping:</span>
-            <span>${calculatePrices().shippingPrice}</span>
+            <span>${calculatePrices().shippingPrice.toFixed(2)}</span>
           </div>
           <div className="flex justify-between">
             <span>Tax:</span>
-            <span>${calculatePrices().taxPrice}</span>
+            <span>${calculatePrices().taxPrice.toFixed(2)}</span>
           </div>
           <div className="flex justify-between font-bold text-xl">
             <span>Total:</span>
-            <span>${calculatePrices().totalPrice}</span>
+            <span>${calculatePrices().totalPrice.toFixed(2)}</span>
           </div>
 
           {/* Бутон за прехвърляне към Checkout */}
