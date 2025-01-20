@@ -2,21 +2,33 @@ const jwt = require("jsonwebtoken");
 const User = require("../model/User");
 
 const protect = async (req, res, next) => {
-  let token;
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
-  ) {
-    try {
-      token = req.headers.authorization.split(" ")[1];
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      req.user = await User.findById(decoded.id).select("-password");
-      next();
-    } catch (error) {
-      res.status(401).json({ message: "Not authorized, token failed" });
+  const token = req.header("Authorization")?.replace("Bearer ", "");
+  if (!token) {
+    return res.status(401).json({ message: "No token provided" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Намиране на потребителя в базата данни
+    const user = await User.findById(decoded.id).select("-password");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
-  } else {
-    res.status(401).json({ message: "Not authorized, no token" });
+
+    // Добавяне на потребителя в `req` за следващите middlewares или контролери
+    req.user = user;
+    next();
+  } catch (error) {
+    console.error("Token validation error:", error);
+
+    // Проверка за изтекъл токен
+    if (error.name === "TokenExpiredError") {
+      return res.status(401).json({ message: "Token has expired" });
+    }
+
+    // За други грешки с токена
+    return res.status(401).json({ message: "Invalid token" });
   }
 };
 

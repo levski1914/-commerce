@@ -4,12 +4,12 @@ import api from "../services/api";
 const userSlice = createSlice({
   name: "user",
   initialState: {
-    userInfo: JSON.parse(localStorage.getItem("userInfo")) || null,
+    userInfo: JSON.parse(localStorage.getItem("user")) || null,
   },
   reducers: {
     logout: (state) => {
       state.userInfo = null;
-      localStorage.removeItem("userInfo");
+      localStorage.removeItem("user");
     },
   },
 });

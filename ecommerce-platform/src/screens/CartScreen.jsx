@@ -1,12 +1,13 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { removeFromCart, updateQuantity } from "../redux/cartSlice";
+import { useNavigate } from "react-router-dom";
 
 const CartScreen = () => {
   // Селектор за достъп до състоянието на количката
   const cartItems = useSelector((state) => state.cart.items);
   const dispatch = useDispatch();
-
+  const navigate = useNavigate();
   // Функция за премахване на продукт
   const handleRemove = (id) => {
     dispatch(removeFromCart(id));
@@ -20,8 +21,27 @@ const CartScreen = () => {
   };
 
   // Проверка на текущото състояние в конзолата (премахни я по-късно)
-  console.log("Cart Items:", cartItems);
+  // console.log("Cart Items:", cartItems);
 
+  const calculatePrices = () => {
+    const totalPrice = cartItems.reduce(
+      (acc, item) => acc + item.price * item.quantity,
+      0
+    );
+
+    const shippingPrice = totalPrice > 50 ? 0 : 10;
+    const taxPrice = totalPrice * 0.1;
+
+    return {
+      totalPrice: totalPrice + shippingPrice + taxPrice,
+      shippingPrice,
+      taxPrice,
+    };
+  };
+
+  const goToCheckout = () => {
+    navigate("/checkout"); // Пренасочване към Checkout компонента
+  };
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
       <h1 className="text-3xl font-bold mb-6">Shopping Cart</h1>
@@ -57,6 +77,42 @@ const CartScreen = () => {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Обобщение на поръчката */}
+      {cartItems.length > 0 && (
+        <div className="mt-6">
+          <h3 className="text-xl font-bold">Order Summary</h3>
+          <div className="flex justify-between">
+            <span>Subtotal:</span>
+            <span>
+              $
+              {calculatePrices().totalPrice -
+                calculatePrices().shippingPrice -
+                calculatePrices().taxPrice}
+            </span>
+          </div>
+          <div className="flex justify-between">
+            <span>Shipping:</span>
+            <span>${calculatePrices().shippingPrice}</span>
+          </div>
+          <div className="flex justify-between">
+            <span>Tax:</span>
+            <span>${calculatePrices().taxPrice}</span>
+          </div>
+          <div className="flex justify-between font-bold text-xl">
+            <span>Total:</span>
+            <span>${calculatePrices().totalPrice}</span>
+          </div>
+
+          {/* Бутон за прехвърляне към Checkout */}
+          <button
+            className="bg-green-500 text-white py-2 px-6 mt-4 rounded-lg"
+            onClick={goToCheckout}
+          >
+            Proceed to Checkout
+          </button>
         </div>
       )}
     </div>

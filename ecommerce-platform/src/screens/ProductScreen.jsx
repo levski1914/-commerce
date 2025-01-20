@@ -23,7 +23,7 @@ const ProductScreen = () => {
 
   if (!product) return <p>Loading product...</p>;
   const handleAddToCart = () => {
-    console.log("Product added:", product);
+    // console.log("Product added:", product);
     dispatch(addToCart(product));
   };
 

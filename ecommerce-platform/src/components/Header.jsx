@@ -3,24 +3,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { logout } from "../redux/userSlice";
 
-const Header = () => {
-  const cartItems = useSelector((state) => state.cart.items);
-
-  const dispatch = useDispatch();
-  const userInfo = useSelector((state) => state.user.userInfo);
-
-  const handleLogout = () => {
-    dispatch(logout());
-  };
+const Header = ({ user, onLogout }) => {
   return (
     <header className="bg-gray-800 text-white p-4">
       <div className="container mx-auto flex justify-between items-center">
-        {/* Лого */}
         <Link to="/" className="text-2xl font-bold">
           ShopLogo
         </Link>
-
-        {/* Навигационни линкове */}
         <nav>
           <ul className="flex space-x-4">
             <li>
@@ -29,11 +18,11 @@ const Header = () => {
               </Link>
             </li>
             <li>
-              <Link to="/cart" className="hover:underline">
-                Cart ({cartItems.length})
+              <Link to="/cart" className="hover:text-gray-300">
+                Cart
               </Link>
             </li>
-            {userInfo ? (
+            {user ? (
               <>
                 <li>
                   <Link to="/profile" className="hover:text-gray-300">
@@ -41,10 +30,7 @@ const Header = () => {
                   </Link>
                 </li>
                 <li>
-                  <button
-                    onClick={handleLogout}
-                    className="hover:text-gray-300"
-                  >
+                  <button onClick={onLogout} className="hover:text-gray-300">
                     Logout
                   </button>
                 </li>

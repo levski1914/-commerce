@@ -2,15 +2,16 @@ import React, { useState } from "react";
 import api from "../services/api";
 import { useNavigate } from "react-router-dom";
 
-const RegisterScreen = () => {
+const RegisterScreen = ({ onLogin }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [adminKey, setAdminKey] = useState(""); // Поле за таен ключ
+
   const [message, setMessage] = useState("");
 
   const navigate = useNavigate();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
@@ -19,14 +20,13 @@ const RegisterScreen = () => {
     }
 
     try {
-      const response = await api.post("/api/users/register", {
+      const response = await api.post("/api/auth/register", {
         name,
         email,
         password,
-        adminKey, // Предаваме тайния ключ
       });
-      console.log("Registration successful:", response.data);
-      localStorage.setItem("userInfo", JSON.stringify(response.data));
+      const { token, user } = response.data;
+      onLogin(token, user);
 
       navigate("/");
     } catch (error) {
@@ -67,13 +67,7 @@ const RegisterScreen = () => {
           onChange={(e) => setConfirmPassword(e.target.value)}
           className="border rounded p-2 w-full mb-4"
         />
-        <input
-          type="text"
-          placeholder="Admin Key (optional)"
-          value={adminKey}
-          onChange={(e) => setAdminKey(e.target.value)}
-          className="border rounded p-2 w-full mb-4"
-        />
+
         <button
           type="submit"
           className="bg-blue-500 text-white py-2 px-4 rounded"

@@ -2,18 +2,26 @@ import React, { useState } from "react";
 import api from "../services/api";
 import { useNavigate } from "react-router-dom";
 
-const LoginScreen = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+const LoginScreen = ({ onLogin }) => {
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
   const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await api.post("/api/auth/login", { email, password });
-      localStorage.setItem("userInfo", JSON.stringify(response.data));
+      const response = await api.post("/api/auth/login", formData);
+      console.log("Response from login:", response.data);
+      const { token, user } = response.data;
+      onLogin(token, user);
       navigate("/");
     } catch (error) {
-      console.log("error with login:", error.response.data.message);
+      setErrorMessage(error.response?.data?.message || "Login failed.");
     }
   };
 
@@ -23,16 +31,16 @@ const LoginScreen = () => {
       <form onSubmit={handleSubmit}>
         <input
           type="email"
+          name="email"
           placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={handleChange}
           className="border rounded p-2 w-full mb-4"
         />
         <input
           type="password"
+          name="password"
           placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={handleChange}
           className="border rounded p-2 w-full mb-4"
         />
         <button

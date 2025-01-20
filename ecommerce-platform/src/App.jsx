@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./App.css";
 import HomeScreen from "./screens/HomeScreen";
@@ -9,24 +9,84 @@ import LoginScreen from "./screens/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen";
 import ProtectedRoute from "./services/ProtectedRoute";
 import ProfileScreen from "./screens/ProfileScreen";
+import Checkout from "./screens/Checkout";
+import CheckOutProtected from "./services/CheckOutProtected";
+import { useDispatch } from "react-redux";
+import { setCartItems } from "./redux/cartSlice";
+import OrderSucceedScreen from "./screens/OrderSucceedScreen";
+import axios from "axios";
 
 function App() {
-  const [count, setCount] = useState(0);
+  const [user, setUser] = useState(null); // Глобално състояние за потребителя
+  // const [count, setCount] = useState(0);
+  // const [user, setUser] = useState;
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const userData = JSON.parse(localStorage.getItem("user"));
+
+    if (token && userData) {
+      setUser(userData);
+      axios
+        .get("http://localhost:5000/api/auth/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((response) => {
+          setUser(response.data);
+        })
+        .catch((error) => {
+          if (error.response && error.response.status === 401) {
+            toast.error("Сесията ви е изтекла. Моля, влезте отново.");
+          } else {
+            console.error("Token validation failed:", error);
+          }
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          setUser(null);
+        });
+    } else {
+      setUser(null);
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+    }
+  }, []);
+  const handleLogin = (token, userData) => {
+    if (token) {
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(userData));
+      setUser(userData);
+    } else {
+      console.error("Token is undefined!");
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setUser(null);
+  };
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    // Извличане на количката от localStorage
+    const storedCartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+    dispatch(setCartItems(storedCartItems));
+  }, [dispatch]);
 
   return (
     <>
       <Router>
-        <Header />
+        <Header user={user} onLogout={handleLogout} />
         <Routes>
           <Route path="/" element={<HomeScreen />} />
           <Route path="/product/:id" element={<ProductScreen />} />
           <Route path="/cart" element={<CartScreen />} />
+          <Route path="/order-success" element={<OrderSucceedScreen />} />
 
           <Route
             path="/login"
             element={
               <ProtectedRoute redirectTo="/">
-                <LoginScreen />
+                <LoginScreen onLogin={handleLogin} />
               </ProtectedRoute>
             }
           />
@@ -34,7 +94,7 @@ function App() {
             path="/register"
             element={
               <ProtectedRoute redirectTo="/">
-                <RegisterScreen />
+                <RegisterScreen onLogin={handleLogin} />
               </ProtectedRoute>
             }
           />
@@ -45,6 +105,14 @@ function App() {
               <ProtectedRoute redirectTo="/login">
                 <ProfileScreen />
               </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/checkout"
+            element={
+              <CheckOutProtected>
+                <Checkout />
+              </CheckOutProtected>
             }
           />
         </Routes>
