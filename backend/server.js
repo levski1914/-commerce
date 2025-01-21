@@ -34,8 +34,8 @@ const limiter = rateLimit({
 
 app.use(limiter);
 
-const csrf = require("csrf");
-app.use(csrf());
+// const csrf = require("csrf");
+// app.use(csrf());
 
 mongoose
   .connect(process.env.MONGO_URI)
