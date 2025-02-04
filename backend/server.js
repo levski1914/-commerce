@@ -19,24 +19,6 @@ app.use("/api/auth", userRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/admin", adminRoutes);
 
-// PROTECTION
-
-const helmet = require("helmet");
-
-app.use(helmet());
-
-const rateLimit = require("express-rate-limit");
-const limiter = rateLimit({
-  windowMS: 15 * 60 * 1000,
-  max: 100,
-  message: "Too many requests from this IP, please try again later",
-});
-
-app.use(limiter);
-
-// const csrf = require("csrf");
-// app.use(csrf());
-
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))

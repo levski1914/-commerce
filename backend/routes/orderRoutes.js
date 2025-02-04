@@ -4,12 +4,18 @@ const {
   addOrderItem,
   getMyOrders,
   getOrderById,
+  updateOrderStatus,
+  getAllOrders,
+  deleteOrder,
 } = require("../controllers/orderController");
 
-const { protect } = require("../middleware/adminMiddleware");
+const { protect, adminMiddleware } = require("../middleware/adminMiddleware");
 
 router.post("/", protect, addOrderItem); // Създаване на поръчка
-router.get("/myorders", protect, getMyOrders); // Поръчките на потребителя
-router.get("/:id", protect, getOrderById); // Детайли за конкретна поръчка
+
+router.get("/", protect, adminMiddleware, getAllOrders);
+router.put("/:id/status", protect, adminMiddleware, updateOrderStatus);
+
+router.delete("/:id", protect, adminMiddleware, deleteOrder);
 
 module.exports = router;

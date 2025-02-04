@@ -16,56 +16,48 @@ import { setCartItems } from "./redux/cartSlice";
 import OrderSucceedScreen from "./screens/OrderSucceedScreen";
 import axios from "axios";
 import AdminScreen from "./screens/adminScreen";
+import { useSelector } from "react-redux";
+
+import {logoutUser,setUser} from './redux/userSlice'
 
 function App() {
-  const [user, setUser] = useState(null); // Глобално състояние за потребителя
-  // const [count, setCount] = useState(0);
-  // const [user, setUser] = useState;
+ const dispatch = useDispatch();
+  const user = useSelector((state) => state.user.userInfo);
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userData = JSON.parse(localStorage.getItem("user"));
 
     if (token && userData) {
-      setUser(userData);
+      dispatch(setUser(userData));
       axios
         .get("http://localhost:5000/api/auth/me", {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((response) => {
-          setUser(response.data);
+          dispatch(setUser(response.data));
         })
         .catch((error) => {
-          if (error.response && error.response.status === 401) {
-            toast.error("Сесията ви е изтекла. Моля, влезте отново.");
-          } else {
-            console.error("Token validation failed:", error);
-          }
           localStorage.removeItem("token");
           localStorage.removeItem("user");
-          setUser(null);
+          dispatch(logoutUser());
         });
     } else {
-      setUser(null);
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
+      dispatch(logoutUser());
     }
-  }, []);
+  }, [dispatch]);
+
   const handleLogin = (token, userData) => {
     if (token) {
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(userData));
-      setUser(userData);
-    } else {
-      console.error("Token is undefined!");
+      dispatch(setUser(userData));
     }
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    setUser(null);
+    dispatch(logoutUser());
   };
-  const dispatch = useDispatch();
 
   useEffect(() => {
     // Извличане на количката от localStorage

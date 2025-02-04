@@ -27,6 +27,11 @@ const ProductScreen = () => {
     dispatch(addToCart(product));
   };
 
+  const availabilityMessage =
+  product.countInStock > 0
+    ? "Product available"
+    : "Out of stock";
+  console.log("CHeck: ",availabilityMessage)
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
       <Link to="/cart" className="text-blue-500 hover:underline">
@@ -42,9 +47,11 @@ const ProductScreen = () => {
           <h2 className="text-3xl font-bold mb-4">{product.name}</h2>
           <p className="text-gray-600 mb-4">{product.description}</p>
           <p className="text-blue-600 font-semibold mb-4">${product.price}</p>
+          <p className="text-green-600 font-semibold mb-4">{availabilityMessage}</p>
           <button
             className="bg-blue-500 text-white py-2 px-6 rounded-lg hover:bg-blue-600"
             onClick={handleAddToCart}
+            disabled={!product.countInStock}
           >
             Add to Cart
           </button>

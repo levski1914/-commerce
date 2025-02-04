@@ -35,7 +35,8 @@ exports.updateProduct = async (req, res) => {
       product.brand = brand || product.brand;
       product.category = category || product.category;
       product.price = price || product.price;
-      product.countInStock = countInStock || product.countInStock;
+      product.countInStock =
+        countInStock !== undefined ? countInStock : product.countInStock;
 
       const updateProduct = await product.save();
       res.json(updateProduct);

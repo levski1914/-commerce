@@ -84,3 +84,55 @@ exports.getOrderById = async (req, res) => {
     res.status(404).json({ message: "Order not found" });
   }
 };
+
+exports.getAllOrders = async (req, res) => {
+  // console.log("getAllOrders called");
+  try {
+    const orders = await Order.find({}).populate("user", "name email");
+    // console.log("Orders:", orders);
+    res.status(200).json(orders);
+  } catch (error) {
+    console.error("Error fetching all orders:", error.message);
+    res.status(500).json({ message: error.message });
+  }
+};
+exports.updateOrderStatus = async (req, res) => {
+  try {
+    const { status } = req.body; // Нов статус от клиента
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    if (status === "delivered") {
+      order.isDelivered = true;
+      order.deliveredAt = new Date();
+    } else if (status === "canceled") {
+      order.isDelivered = false;
+      order.deliveredAt = null;
+    }
+
+    const updatedOrder = await order.save();
+    res.status(200).json(updatedOrder);
+  } catch (error) {
+    console.error("Error updating order status:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+exports.deleteOrder = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    await order.deleteOne(); // Изтриваме поръчката
+    res.status(200).json({ message: "Order deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting order:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};

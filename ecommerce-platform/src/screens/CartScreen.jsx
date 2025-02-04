@@ -88,9 +88,11 @@ const CartScreen = () => {
             <span>Subtotal:</span>
             <span>
               $&nbsp;
-              {calculatePrices().totalPrice -
-                calculatePrices().shippingPrice -
-                calculatePrices().taxPrice.toFixed(2)}
+                      {(
+            calculatePrices().totalPrice -
+            calculatePrices().shippingPrice -
+            calculatePrices().taxPrice
+            ).toFixed(2)}
             </span>
           </div>
           <div className="flex justify-between">
